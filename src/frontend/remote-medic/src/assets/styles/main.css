@@ -1,0 +1,87 @@
+body {
+  margin: 0;
+  padding: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+input {
+  padding: 9px 12px;
+  border-radius: 5px;
+  border: 1px solid #a4a4a4;
+  box-shadow: 1px 2px 6px -3px #000000bd;
+  outline-color: transparent;
+  transition: ease-in border 0.25s, ease-in outline-color 0.25s;
+}
+
+input:hover {
+  outline-style: solid;
+  outline-width: thin;
+  outline-color: #60e7ffd8 !important;
+  border: 1px solid #60e7ffd8;
+}
+
+input:focus-visible {
+  outline-style: solid;
+  outline-width: medium;
+  outline-color: #3dace0a4 !important;
+  border: 1px solid #3dace0a4;
+}
+
+.flex {
+  display: flex;
+  gap: 10px;
+}
+
+.input-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  justify-content: flex-start;
+  p{
+    margin: 0px;
+    padding: 5px;
+    text-align: justify;
+  }
+}
+
+.button-template {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  padding: 12px;
+  border-radius: 9px;
+  border: 0px;
+  box-shadow: 2px 3px 8px -4px black;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.button-success {
+  background-color: #208528;
+  color: white;
+}
+.button-success:hover {
+  background-color: #26a030;
+  color: white;
+}
+.button-grey {
+  background-color: #3f3f3f;
+  color: white;
+}
+.button-grey:hover {
+  background-color: #636363;
+  color: white;
+}
+
+.login-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  background-color: #a4d1bd;
+  border-radius: 1.2rem;
+  box-shadow: 1px 0px 12px 1px #00000075;
+  padding: 3rem;
+}
