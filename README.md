@@ -1,6 +1,4 @@
 ---
-
-```markdown
 # 🏥 Sistema de Monitorización de Pacientes y Cuidadores
 
 Este proyecto es una aplicación web diseñada para ayudar en el **seguimiento de pacientes o familiares enfermos**, permitiendo registrar información médica clave como medicamentos, dolencias e instrucciones de cuidado personalizado.
@@ -112,6 +110,5 @@ VITE_API_BASE_URL=http://localhost:5000/api
 ## 📄 Licencia
 
 Este proyecto está licenciado bajo la **MIT License**.
-```
 
 ---
