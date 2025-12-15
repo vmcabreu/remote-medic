@@ -1,7 +1,7 @@
 <script>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
 import MessageToast from "./../MessageToast.vue";
+import { useAuthStore } from "@/stores/auth.store";
 
 export default {
   name: "MainLayout",
@@ -11,7 +11,7 @@ export default {
   },
 
   setup() {
-    const router = useRouter();
+    const authStore = useAuthStore()
     const toast = ref(null);
 
     const showError = (msg) => {
@@ -19,7 +19,7 @@ export default {
     };
 
     const logout = () => {
-      router.push("/login");
+      authStore.logout()
     };
 
     return {

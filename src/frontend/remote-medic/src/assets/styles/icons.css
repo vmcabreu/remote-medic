@@ -93,3 +93,23 @@
   -webkit-mask-image: url("./../icons/trash.svg");
   mask-image: url("./../icons/trash.svg");
 }
+.password {
+  -webkit-mask-image: url("./../icons/key.svg");
+  mask-image: url("./../icons/key.svg");
+}
+.login{
+  -webkit-mask-image: url("./../icons/login.svg");
+  mask-image: url("./../icons/login.svg");
+}
+.login-form-icon{
+  -webkit-mask-image: url("./../icons/entrance.svg");
+  mask-image: url("./../icons/entrance.svg");
+}
+.register-form-icon{
+  -webkit-mask-image: url("./../icons/enter.svg");
+  mask-image: url("./../icons/enter.svg");
+}
+.register-router-icon{
+  -webkit-mask-image: url("./../icons/clipboard-list.svg");
+  mask-image: url("./../icons/clipboard-list.svg");
+}

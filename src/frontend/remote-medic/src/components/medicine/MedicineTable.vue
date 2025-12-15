@@ -142,13 +142,10 @@ export default {
     <div class="table-header">
       <h2 class="table-title">Lista de Medicamentos</h2>
       <div v-if="isAdmin" class="admin-actions">
-        <!-- Botón para deshabilitar activos -->
         <button v-if="selectedActiveMedicines.length > 0" class="action-btn danger" @click="disableMedicines">
           <i class="core-icon disable-round small-icon"></i>
           <span>Deshabilitar {{ selectedActiveMedicines.length }}</span>
         </button>
-
-        <!-- Botón para habilitar inactivos -->
         <button v-if="selectedInactiveMedicines.length > 0" class="action-btn success" @click="enableMedicines">
           <i class="core-icon check-circle small-icon"></i>
           <span>Habilitar {{ selectedInactiveMedicines.length }}</span>

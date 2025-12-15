@@ -186,7 +186,6 @@ export default {
 
 <template>
   <div class="patient-table-container">
-    <!-- Tabla principal -->
     <div class="table-header">
       <h2 class="table-title">{{ tableTitle }}</h2>
       <div class="table-actions">
@@ -228,7 +227,6 @@ export default {
       </table>
     </div>
 
-    <!-- Paginación -->
     <div class="pagination">
       <button class="page-btn" :disabled="currentPage === 1" @click="prevPage">
         ⬅ Anterior
@@ -241,7 +239,6 @@ export default {
       </button>
     </div>
 
-    <!-- ✅ MODAL ESTILO MEDICAMENTOS -->
     <div v-if="showAssignModal" class="modal-overlay" @click="closeAssignModal">
       <div class="modal-content" @click.stop>
         <div class="modal-header">

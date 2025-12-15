@@ -4,7 +4,7 @@ import re
 from datetime import datetime, timedelta
 
 @staticmethod
-def register_user(username, email, password, first_name=None, last_name=None):
+def register_user(username, email, password, first_name, last_name):
     """Registrar nuevo usuario"""
     try:
         if not validate_username(username):
@@ -24,10 +24,11 @@ def register_user(username, email, password, first_name=None, last_name=None):
             return None, "El email ya está registrado"
         
         user = User(
-            username=username.lower().strip(),
-            email=email.lower().strip(),
-            first_name=first_name.strip() if first_name else None,
-            last_name=last_name.strip() if last_name else None
+        username=username,
+        first_name=first_name,
+        last_name=last_name,
+        email=email,
+        is_active=True
         )
         user.set_password(password)
         

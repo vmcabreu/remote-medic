@@ -57,25 +57,22 @@ def register():
         if not data:
             return jsonify({'error': 'No se proporcionaron datos'}), 400
 
-    
         required_fields = ['username', 'email', 'password']
         missing_fields = [field for field in required_fields if field not in data or not data[field]]
         if missing_fields:
             return jsonify({'error': f'Campos requeridos: {", ".join(missing_fields)}'}), 400
 
-    
-        user, token, message = register_user(
+        user, message = register_user(
             username=data['username'],
             email=data['email'],
             password=data['password'],
-            first_name=data.get('first_name'),
-            last_name=data.get('last_name')
+            first_name=data.get('first_name') or data.get('firstName', ''),
+            last_name=data.get('last_name') or data.get('lastName', '')
         )
 
         if not user:
             return jsonify({'error': message}), 400
 
-    
         token = create_access_token(identity={
             'user_id': user.id,
             'username': user.username,
@@ -89,9 +86,10 @@ def register():
         }), 201
 
     except Exception as e:
+        import traceback
         logger.error(f"Error en registro: {str(e)}")
+        print(f"TRACEBACK COMPLETO:\n{traceback.format_exc()}")
         return jsonify({'error': 'Error interno del servidor'}), 500
-
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
