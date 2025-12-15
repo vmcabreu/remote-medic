@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import jwt_required
 from app.services.user_service import *
-from backend.app.routes.auth_routes import admin_required
+from .auth_routes import admin_required
 import logging
 
 logger = logging.getLogger(__name__)
@@ -10,6 +11,7 @@ user_bp = Blueprint('user_bp', __name__, url_prefix='/api/users')
 #Consigue una lista de usuarios
 @user_bp.route('/', methods=['GET'])
 @admin_required
+@jwt_required()
 def list_users(current_user):
     """GET /api/users - Listar todos los usuarios (solo admin)"""
     try:
@@ -49,6 +51,7 @@ def list_users(current_user):
 
 @user_bp.route('/<int:user_id>', methods=['GET'])
 @admin_required
+@jwt_required()
 def get_user(current_user, user_id):
     """GET /api/users/<id> - Obtener usuario por ID (solo admin)"""
     try:
@@ -65,6 +68,7 @@ def get_user(current_user, user_id):
 
 @user_bp.route('/<int:user_id>/activate', methods=['POST'])
 @admin_required
+@jwt_required()
 def activate_user(current_user, user_id):
     """POST /api/users/<id>/activate - Activar usuario (solo admin)"""
     try:
@@ -81,6 +85,7 @@ def activate_user(current_user, user_id):
 
 @user_bp.route('/<int:user_id>/deactivate', methods=['POST'])
 @admin_required
+@jwt_required()
 def deactivate_user(current_user, user_id):
     """POST /api/users/<id>/deactivate - Desactivar usuario (solo admin)"""
     try:
@@ -98,9 +103,6 @@ def deactivate_user(current_user, user_id):
         logger.error(f"Error al desactivar usuario {user_id}: {str(e)}")
         return jsonify({'error': 'Error interno del servidor'}), 500
 
-# ==========================================
-# MANEJADORES DE ERRORES
-# ==========================================
 
 @user_bp.errorhandler(404)
 def not_found_users(error):

@@ -1,90 +1,100 @@
 <script>
 import { ref } from 'vue'
+import MessageToast from './../MessageToast.vue'
 import LoginView from './../../login/LoginView.vue'
 import RegisterView from './../../login/RegisterView.vue'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'LoginLayout',
+
   components: {
     LoginView,
-    RegisterView
+    RegisterView,
+    MessageToast
   },
   setup() {
+
     const loginFlag = ref(true)
+    const toast = ref(null)
+    const router = useRouter()
+    const showError = (msg) => {
+      toast.value.show(msg)
+    }
     function setRegister() {
       loginFlag.value = false
     }
     function setLogin() {
       loginFlag.value = true
     }
-    return {
-      loginFlag,
-      setRegister,
-      setLogin
-    };
+    function redirectToMainPage() {
+      router.push({ name: 'Home' })
+    }
+    return { router,loginFlag, setRegister, setLogin, toast, showError ,redirectToMainPage}
   }
 }
 </script>
 
 <template>
   <div class="main-container">
->
     <div class="login-card">
-      <LoginView v-if="loginFlag === true" @register="setRegister" />
-      <RegisterView v-if="loginFlag === false" @login="setLogin" />
+      <LoginView v-if="loginFlag === true" @register="setRegister" @error="showError"
+        @redirect="redirectToMainPage()" />
+      <RegisterView v-if="loginFlag === false" @login="setLogin" @error="showError" />
+      <MessageToast ref="toast" />
     </div>
-      <div class="bubbles">
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-    <div class="bubble"></div>
-  </div>
+    <div class="bubbles">
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+    </div>
   </div>
 
 </template>
@@ -393,6 +403,7 @@ export default {
   from {
     transform: translateX(-100%);
   }
+
   to {
     transform: translateX(100%);
   }
@@ -402,6 +413,7 @@ export default {
   from {
     transform: translateX(100%);
   }
+
   to {
     transform: translateX(-100%);
   }

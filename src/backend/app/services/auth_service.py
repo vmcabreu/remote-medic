@@ -1,14 +1,12 @@
 from app.models.user import User, db
 from flask import current_app
 import re
-from datetime import datetime
-
+from datetime import datetime, timedelta
 
 @staticmethod
 def register_user(username, email, password, first_name=None, last_name=None):
     """Registrar nuevo usuario"""
     try:
-        # Validaciones
         if not validate_username(username):
             return None, "Nombre de usuario inválido"
         
@@ -18,14 +16,13 @@ def register_user(username, email, password, first_name=None, last_name=None):
         if not validate_password(password):
             return None, "La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número"
         
-        # Verificar si ya existe
+        
         if User.query.filter_by(username=username).first():
             return None, "El nombre de usuario ya existe"
         
         if User.query.filter_by(email=email).first():
             return None, "El email ya está registrado"
         
-        # Crear usuario
         user = User(
             username=username.lower().strip(),
             email=email.lower().strip(),
@@ -48,7 +45,6 @@ def register_user(username, email, password, first_name=None, last_name=None):
 def login_user(identifier, password):
     """Login de usuario (por username o email)"""
     try:
-        # Buscar por username o email
         user = User.query.filter(
             (User.username == identifier.lower()) | 
             (User.email == identifier.lower())
@@ -63,12 +59,8 @@ def login_user(identifier, password):
         if not user.check_password(password):
             return None, None, "Contraseña incorrecta"
         
-        # Actualizar último login
         user.update_last_login()
-        
-        # Generar token
         token = user.generate_token()
-        
         return user, token, "Login exitoso"
         
     except Exception as e:
@@ -110,7 +102,7 @@ def update_profile(user_id, data):
         if not user:
             return None, "Usuario no encontrado"
         
-        # Validar email si se está cambiando
+        
         if 'email' in data and data['email'] != user.email:
             if not validate_email(data['email']):
                 return None, "Email inválido"
@@ -120,7 +112,7 @@ def update_profile(user_id, data):
             
             user.email = data['email'].lower().strip()
         
-        # Actualizar otros campos
+        
         if 'first_name' in data:
             user.first_name = data['first_name'].strip() if data['first_name'] else None
         
@@ -143,7 +135,7 @@ def validate_username(username):
     if not username or len(username) < 3 or len(username) > 64:
         return False
     
-    # Solo letras, números y guiones bajos
+    
     return re.match(r'^[a-zA-Z0-9_]+$', username) is not None
 
 @staticmethod
@@ -161,7 +153,7 @@ def validate_password(password):
     if not password or len(password) < 8:
         return False
     
-    # Al menos una mayúscula, una minúscula y un número
+    
     has_upper = re.search(r'[A-Z]', password)
     has_lower = re.search(r'[a-z]', password)
     has_digit = re.search(r'\d', password)

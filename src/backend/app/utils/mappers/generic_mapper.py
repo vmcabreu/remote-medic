@@ -8,8 +8,7 @@ class GenericMapper:
     Mapper genérico universal para modelos SQLAlchemy
     Permite mapear entre modelos, diccionarios y realizar operaciones CRUD
     """
-    
-    # Campos que se excluyen por defecto en las operaciones
+        
     DEFAULT_EXCLUDE_FIELDS = ['id', 'created_at', 'updated_at']
     
     @classmethod
@@ -30,15 +29,12 @@ class GenericMapper:
         """
         if exclude_fields is None:
             exclude_fields = cls.DEFAULT_EXCLUDE_FIELDS.copy()
-        
-        # Obtener columnas válidas del modelo target
+                
         valid_columns = cls._get_model_columns(target)
-        
-        # Mapear desde diccionario
+                
         if isinstance(source, dict):
             return cls._map_dict_to_model(source, target, valid_columns, exclude_fields, include_none)
-        
-        # Mapear desde otro modelo
+                
         return cls._map_model_to_model(source, target, valid_columns, exclude_fields, include_none)
     
     @classmethod
@@ -59,27 +55,22 @@ class GenericMapper:
             exclude_fields = []
         
         result = {}
-        
-        # Mapear columnas básicas
+                
         for column in cls._get_model_columns(model):
             if column not in exclude_fields:
-                value = getattr(model, column, None)
-                # Convertir datetime a string para serialización JSON
+                value = getattr(model, column, None)                
                 if isinstance(value, datetime):
                     value = value.isoformat()
                 result[column] = value
-        
-        # Incluir relaciones si se solicita
+                
         if include_relationships:
             for relationship in cls._get_model_relationships(model):
                 if relationship not in exclude_fields:
                     related_obj = getattr(model, relationship, None)
                     if related_obj:
-                        if hasattr(related_obj, '__iter__') and not isinstance(related_obj, str):
-                            # Relación uno-a-muchos
+                        if hasattr(related_obj, '__iter__') and not isinstance(related_obj, str):                            
                             result[relationship] = [cls.map_to_dict(obj, exclude_fields) for obj in related_obj]
-                        else:
-                            # Relación uno-a-uno
+                        else:                            
                             result[relationship] = cls.map_to_dict(related_obj, exclude_fields)
         
         return result
@@ -100,11 +91,9 @@ class GenericMapper:
         """
         if exclude_fields is None:
             exclude_fields = cls.DEFAULT_EXCLUDE_FIELDS.copy()
-        
-        # Crear instancia vacía
+                
         new_instance = model_class()
-        
-        # Mapear datos
+                
         return cls.map_to_model(data, new_instance, exclude_fields)
     
     @classmethod
@@ -174,18 +163,15 @@ class GenericMapper:
                 primary_value = getattr(primary, column, None)
                 secondary_value = getattr(secondary, column, None)
                 
-                if prefer_primary:
-                    # Solo usar secondary si primary es None
+                if prefer_primary:                    
                     if primary_value is None and secondary_value is not None:
                         setattr(primary, column, secondary_value)
-                else:
-                    # Usar secondary si no es None
+                else:                    
                     if secondary_value is not None:
                         setattr(primary, column, secondary_value)
         
         return primary
-    
-    # Métodos privados helpers
+        
     @classmethod
     def _get_model_columns(cls, model: Any) -> List[str]:
         """Obtiene las columnas de un modelo SQLAlchemy"""

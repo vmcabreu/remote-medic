@@ -1,30 +1,37 @@
 <script>
 import { reactive } from "vue";
-
+import authService from './../../services/authService'
+import { useAuthStore } from '@/stores/auth.store'
 export default {
   name: 'LoginView',
-  emits: ['register'],
-  setup(props, { emit }) {
+  emits: ['register', 'error', 'redirect'],
+   setup(props, { emit }) { 
+    const authStore = useAuthStore()
     const user = reactive({
       username: '',
       password: ''
-    });
-
-    const login = () => {
-      console.log(user);
+    })
+    const doLogin = async () => {
+      try {
+      const data = await authService.login(user)
+      authStore.setToken(data.token)
+      authStore.setUser(data.user)
+       emit('redirect')
+      } catch (err) {
+        const message = err.response?.data?.error || 'Error al iniciar sesión'
+        emit('error', message)
+      }
     }
-
-    const changeToRegister = () => emit('register')
-
+     const changeToRegister = () => emit('register')
     return {
       user,
-      login,
-      changeToRegister
-    };
+      authStore,
+      changeToRegister,
+      doLogin
+    }
   }
 }
 </script>
-
 <template>
   <h4>Iniciar Sesión</h4>
   <div class="input-layout">
@@ -36,7 +43,7 @@ export default {
     <input type="password" v-model.trim="user.password">
   </div>
   <div class="flex">
-    <button class="button-template button-success" @click="login()">Login</button>
+    <button class="button-template button-success" @click="doLogin()">Login</button>
     <button class="button-template button-grey" @click="changeToRegister()">Registrarse</button>
   </div>
 </template>

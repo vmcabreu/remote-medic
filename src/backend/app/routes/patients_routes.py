@@ -1,37 +1,33 @@
+from datetime import datetime
 from flask import Blueprint, request, jsonify
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from sqlalchemy import null
 from app.services.patients_service import *
 import logging
 
 logger = logging.getLogger(__name__)
 
-# Crear el blueprint
 patient_bp = Blueprint('patient_bp', __name__, url_prefix='/api/patients')
 
-# ==========================================
-# RUTAS BÁSICAS DE PACIENTES
-# ==========================================
 
-@patient_bp.route('/', methods=['GET'])
+@patient_bp.route('', methods=['GET'])
+@jwt_required()
 def list_patients():
     """GET /api/patients - Obtener todos los pacientes (con paginación opcional)"""
-    try:
-        # Parámetros de paginación opcionales
+    try:        
         page = request.args.get('page', type=int)
         per_page = request.args.get('per_page', type=int)
-        
-        # Si no hay parámetros de paginación, devolver todos
+                
         if not page and not per_page:
-            patients = get_all_patient()
+            patients = get_all_patients()
             return jsonify({
                 'patients': [p.to_dict() for p in patients],
                 'total': len(patients)
             })
-        
-        # Con paginación
+                
         page = page or 1
         per_page = per_page or 10
-        
-        # Validar parámetros
+                
         if page < 1 or per_page < 1 or per_page > 100:
             return jsonify({'error': 'Parámetros de paginación inválidos'}), 400
         
@@ -52,8 +48,26 @@ def list_patients():
     except Exception as e:
         logger.error(f"Error al obtener pacientes: {str(e)}")
         return jsonify({'error': 'Error interno del servidor'}), 500
+    
+@patient_bp.route('/unassigned', methods=['GET'])
+@jwt_required()
+def list_unassigned_patients():
+    """Pacientes SIN usuarios asignados (usando backref)"""
+    try:
 
-@patient_bp.route('/', methods=['POST'])
+        patients = Patient.query.filter(
+            ~Patient.assigned_users.any()
+        ).order_by(Patient.created_at.desc()).all()
+
+        return jsonify({
+            'patients': [p.to_dict() for p in patients],
+            'total': len(patients)
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@patient_bp.route('', methods=['POST'])
+@jwt_required()
 def add_patient():
     """POST /api/patients - Crear un nuevo paciente"""
     try:
@@ -61,8 +75,7 @@ def add_patient():
         
         if not data or 'name' not in data:
             return jsonify({'error': 'El campo name es requerido'}), 400
-        
-        # Crear el paciente
+                
         new_patient = create_patient(data)
         
         return jsonify({
@@ -75,21 +88,33 @@ def add_patient():
         return jsonify({'error': 'Error al crear el paciente'}), 500
 
 @patient_bp.route('/<int:patient_id>', methods=['GET'])
+@jwt_required()
 def get_patient(patient_id):
     """GET /api/patients/<id> - Obtener un paciente por ID"""
     try:
         patient = get_patient_by_id(patient_id)
-        
         if not patient:
             return jsonify({'error': 'Paciente no encontrado'}), 404
-        
         return jsonify({'patient': patient.to_dict()})
         
     except Exception as e:
         logger.error(f"Error al obtener paciente {patient_id}: {str(e)}")
         return jsonify({'error': 'Error interno del servidor'}), 500
+    
+@patient_bp.route('/carer/<int:carer_id>/patients', methods=['GET'])
+@jwt_required()
+def get_carer_patients(carer_id):
+    """GET /carer/<int:carer_id>/patients - Obtener pacientes por ID del cuidador"""
+    try:
+        patients = get_patients_by_carer_id(carer_id)
+        return jsonify([p.to_dict() for p in patients])
+    except Exception as e:
+        logger.error(f"Error al obtener a los pacientes por el cuidador {carer_id}: {str(e)}")
+        return jsonify({'error': 'Error interno del servidor'}), 500
+
 
 @patient_bp.route('/<int:patient_id>', methods=['PUT'])
+@jwt_required()
 def update_patient_route(patient_id):
     """PUT /api/patients/<id> - Actualizar un paciente"""
     try:
@@ -116,6 +141,7 @@ def update_patient_route(patient_id):
         return jsonify({'error': 'Error al actualizar el paciente'}), 500
 
 @patient_bp.route('/<int:patient_id>', methods=['DELETE'])
+@jwt_required()
 def delete_patient_route(patient_id):
     """DELETE /api/patients/<id> - Eliminar un paciente"""
     try:
@@ -133,11 +159,9 @@ def delete_patient_route(patient_id):
         logger.error(f"Error al eliminar paciente {patient_id}: {str(e)}")
         return jsonify({'error': 'Error al eliminar el paciente'}), 500
 
-# ==========================================
-# RUTAS DE ASIGNACIONES
-# ==========================================
 
 @patient_bp.route('/<int:patient_id>/assign', methods=['POST'])
+@jwt_required()
 def assign_patient_to_user_route(patient_id):
     """POST /api/patients/<id>/assign - Asignar paciente a usuario"""
     try:
@@ -162,30 +186,27 @@ def assign_patient_to_user_route(patient_id):
         return jsonify({'error': 'Error al asignar el paciente'}), 500
 
 @patient_bp.route('/<int:patient_id>/assign', methods=['DELETE'])
+@jwt_required()
 def remove_patient_assignment_route(patient_id):
-    """DELETE /api/patients/<id>/assign - Remover asignación de paciente"""
+    """DELETE /api/patients/<id>/assign"""
     try:
         if not patient_exists(patient_id):
             return jsonify({'error': 'Paciente no encontrado'}), 404
+        current_user_id = int(get_jwt_identity())
         
-        data = request.json
-        user_id = data.get('user_id') if data else None
-        
-        if not user_id:
-            return jsonify({'error': 'user_id es requerido'}), 400
-        
-        success = remove_patient_from_user(user_id, patient_id)
+        success = remove_patient_from_user(current_user_id, patient_id)
         
         if success:
-            return jsonify({'message': 'Asignación removida exitosamente'})
+            return jsonify({'message': 'Asignación removida'}), 200
         else:
-            return jsonify({'error': 'Error al remover asignación'}), 400
+            return jsonify({'error': 'Error al remover'}), 400
             
     except Exception as e:
-        logger.error(f"Error al remover asignación del paciente {patient_id}: {str(e)}")
-        return jsonify({'error': 'Error al remover la asignación'}), 500
-
+        logger.error(f"Error: {str(e)}")
+        return jsonify({'error': 'Error interno'}), 500
+    
 @patient_bp.route('/<int:patient_id>/users', methods=['GET'])
+@jwt_required()
 def get_patient_users_route(patient_id):
     """GET /api/patients/<id>/users - Obtener usuarios asignados al paciente"""
     try:
@@ -204,14 +225,11 @@ def get_patient_users_route(patient_id):
         logger.error(f"Error al obtener usuarios del paciente {patient_id}: {str(e)}")
         return jsonify({'error': 'Error interno del servidor'}), 500
 
-# ==========================================
-# RUTAS ADICIONALES PARA USUARIOS/CUIDADORES
-# ==========================================
 
-# Crear blueprint adicional para rutas de usuarios con pacientes
 user_patients_bp = Blueprint('user_patients_bp', __name__, url_prefix='/api/users')
 
 @user_patients_bp.route('/<int:user_id>/patients', methods=['GET'])
+@jwt_required()
 def get_user_patients_route(user_id):
     """GET /api/users/<id>/patients - Obtener pacientes asignados al usuario"""
     try:
@@ -230,14 +248,13 @@ def get_user_patients_route(user_id):
         logger.error(f"Error al obtener pacientes del usuario {user_id}: {str(e)}")
         return jsonify({'error': 'Error interno del servidor'}), 500
 
-# Blueprint para cuidadores
 carer_bp = Blueprint('carer_bp', __name__, url_prefix='/api/carers')
 
 @carer_bp.route('/<int:carer_id>/patients', methods=['GET'])
+@jwt_required()
 def get_carer_patients_route(carer_id):
     """GET /api/carers/<id>/patients - Obtener pacientes del cuidador"""
-    try:
-        # Usar get_user_patients ya que get_patient_by_carer_id tiene un bug
+    try:        
         patients = get_user_patients(carer_id)
         
         if patients is None:
@@ -253,9 +270,6 @@ def get_carer_patients_route(carer_id):
         logger.error(f"Error al obtener pacientes del cuidador {carer_id}: {str(e)}")
         return jsonify({'error': 'Error interno del servidor'}), 500
 
-# ==========================================
-# MANEJADORES DE ERRORES
-# ==========================================
 
 @patient_bp.errorhandler(404)
 def not_found(error):
@@ -269,7 +283,6 @@ def bad_request(error):
 def internal_error(error):
     return jsonify({'error': 'Error interno del servidor'}), 500
 
-# Aplicar los mismos manejadores a los otros blueprints
 @user_patients_bp.errorhandler(404)
 def not_found_users(error):
     return jsonify({'error': 'Recurso no encontrado'}), 404

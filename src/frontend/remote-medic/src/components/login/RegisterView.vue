@@ -1,9 +1,9 @@
 <script>
 import { reactive } from 'vue';
-
+import authService from './../../services/authService'
 export default {
   name: 'RegisterView',
-  emits: ['login'],
+  emits: ['login', 'error'],
   setup(props, { emit }) {
     const user = reactive({
       username: '',
@@ -64,19 +64,13 @@ export default {
       Object.keys(user).forEach(element => {
         switch (element) {
           case 'username':
-
             break;
           case 'email':
-
             break;
           case 'password':
-
             break;
           case 'repeatPassword':
-
             break;
-
-
           default:
             break;
         }
@@ -84,9 +78,15 @@ export default {
 
     }
 
-    const register = () => {
-      console.log(user);
-    };
+    const doRegister = async () => {
+      try {
+        await authService.register(user)
+         emit('login');
+      } catch (err) {
+        const message = err.response?.data?.error || 'Error al iniciar sesión'
+        emit('error', message)
+      }
+    }
 
     const changeToRegister = () => {
       emit('login');
@@ -94,7 +94,7 @@ export default {
 
     return {
       user,
-      register,
+      doRegister,
       changeToRegister,
       errorsMessage,
       checkForm
@@ -105,7 +105,7 @@ export default {
 
 <template>
   <h4>Registrarse</h4>
-  <form v-on:submit.prevent="register()" class="register-container">
+  <form v-on:submit.prevent="doRegister()" class="register-container">
     <div class="login-form-container">
       <div class="input-layout">
         <p>Usuario:</p>
@@ -125,7 +125,7 @@ export default {
       </div>
     </div>
     <div class="flex">
-      <button class="button-template button-success" type="submit">Registrarse</button>
+      <button class="button-template button-success" type="submit" >Registrarse</button>
       <button class="button-template button-grey" type="button" @click="changeToRegister()">Iniciar Sesión</button>
     </div>
   </form>

@@ -11,6 +11,8 @@
     "axios": "^1.10.0",
     "core-js": "^3.8.3",
     "pinia": "^3.0.2",
+    "primeicons": "^7.0.0",
+    "primevue": "^4.5.3",
     "vue": "^3.2.13",
     "vue-router": "4",
     "zod": "^3.24.4"

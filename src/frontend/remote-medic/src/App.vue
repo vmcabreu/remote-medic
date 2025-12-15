@@ -1,15 +1,10 @@
 <template>
-  <LoginLayout />
+  <router-view />
 </template>
 
 <script>
-import LoginLayout from './components/layout/login/LoginLayout.vue';
-
 export default {
-  name: 'App',
-  components: {
-    LoginLayout
-  }
+  name: 'App'
 }
 </script>
 

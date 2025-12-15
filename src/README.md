@@ -1,6 +1,4 @@
 ---
-
-```markdown
 # 🏥 Sistema de Monitorización de Pacientes y Cuidadores
 
 Este proyecto es una aplicación web diseñada para ayudar en el **seguimiento de pacientes o familiares enfermos**, permitiendo registrar información médica clave como medicamentos, dolencias e instrucciones de cuidado personalizado.
@@ -20,7 +18,7 @@ Este proyecto es una aplicación web diseñada para ayudar en el **seguimiento d
 - 💊 Asignación de medicamentos con dosis y horarios
 - 🤒 Registro de dolencias y condiciones médicas
 - 📘 Instrucciones personalizadas de cuidado
-- 🔐 Sistema básico de autenticación para cuidadores o familiares con JWT
+- 🔐 Sistema básico de autenticación para cuidadores con JWT
 
 
 ---
@@ -112,6 +110,5 @@ VITE_API_BASE_URL=http://localhost:5000/api
 ## 📄 Licencia
 
 Este proyecto está licenciado bajo la **MIT License**.
-```
 
 ---

@@ -40,8 +40,6 @@ def delete_user(user_id):
         user = User.query.get(user_id)
         if not user:
             return False
-        
-        # Soft delete - solo desactivar
         user.is_active = False
         user.updated_at = datetime.utcnow()
         db.session.commit()

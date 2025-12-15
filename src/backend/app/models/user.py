@@ -1,6 +1,9 @@
-from datetime import datetime
+from datetime import datetime, timedelta
+import os
+
 from app.extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_jwt_extended import create_access_token
 import jwt
 
 class User(db.Model):
@@ -24,8 +27,10 @@ class User(db.Model):
     last_login = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-   
-    # Relación muchos a muchos con pacientes
+    work_start_time = db.Column(db.Time, nullable=True)  
+    work_end_time = db.Column(db.Time, nullable=True) 
+    work_days = db.Column(db.String(50), default='mon,tue,wed,thu,fri')
+    is_available = db.Column(db.Boolean, default=True)     
     patients = db.relationship('Patient', 
                              secondary=user_patient_assignment,
                              backref=db.backref('assigned_users', lazy='dynamic'),
@@ -43,22 +48,24 @@ class User(db.Model):
             return f"{self.first_name} {self.last_name}"
         return self.username
 
-    def generate_token(self, expires_in=3600):
-        """Generar JWT token"""
-        payload = {
-            'user_id': self.id,
+    def generate_token(self):        
+        identity_str = str(self.id)  
+        additional_claims = {
             'username': self.username,
-            'exp': datetime.utcnow() + timedelta(seconds=expires_in),
-            'iat': datetime.utcnow()
+            'is_admin': self.is_admin
         }
-        return jwt.encode(payload, os.getenv('SECRET_KEY', 'dev-secret-key'), algorithm='HS256')
-
+        return create_access_token(identity=identity_str, additional_claims=additional_claims)
     @staticmethod
     def verify_token(token):
         """Verificar JWT token"""
         try:
-            payload = jwt.decode(token, os.getenv('SECRET_KEY', 'dev-secret-key'), algorithms=['HS256'])
-            return User.query.get(payload['user_id'])
+            payload = jwt.decode(
+                token,
+                os.getenv('SECRET_KEY', 'dev-secret-key'),
+                algorithms=['HS256']
+            )
+            user_id = payload.get('sub')
+            return User.query.get(user_id)
         except jwt.ExpiredSignatureError:
             return None
         except jwt.InvalidTokenError:
@@ -68,9 +75,24 @@ class User(db.Model):
         """Actualizar último login"""
         self.last_login = datetime.utcnow()
         db.session.commit()
+        
+        
+    def is_in_working_hours(self):
+        """Verifica si el usuario está en horario laboral actual"""
+        now = datetime.utcnow()
+        current_time = now.time()
+        current_day = now.strftime('%a').lower()
+                
+        work_days_list = self.work_days.split(',')
+        if current_day not in [day.strip() for day in work_days_list]:
+            return False
+                    
+        if self.work_start_time and self.work_end_time:
+            return self.work_start_time <= current_time <= self.work_end_time
+            
+        return self.is_available
 
     def to_dict(self, include_sensitive=False):
-        """Convertir a diccionario"""
         data = {
             'id': self.id,
             'username': self.username,
@@ -82,13 +104,28 @@ class User(db.Model):
             'is_admin': self.is_admin,
             'last_login': self.last_login.isoformat() if self.last_login else None,
             'created_at': self.created_at.isoformat() if self.created_at else None,
-            'updated_at': self.updated_at.isoformat() if self.updated_at else None
+            'updated_at': self.updated_at.isoformat() if self.updated_at else None,
+            'work_start_time': self.work_start_time.isoformat() if self.work_start_time else None,
+            'work_end_time': self.work_end_time.isoformat() if self.work_end_time else None,
+            'work_days': self.work_days,
+            'is_available': self.is_available,
+            'in_working_hours': self.is_in_working_hours()
         }
         
         if include_sensitive:
             data['patient_count'] = self.patients.count()
-            
+            data['patients'] = [
+                {
+                    'id': p.id,
+                    'first_name': p.name,
+                    'last_name': p.surname,
+                    'full_name': f"{p.name or ''} {p.surname or ''}".strip() or str(p.id)
+                }
+                for p in self.patients.all()
+            ]
+        
         return data
+
 
     def __repr__(self):
         return f'<User {self.username}>'

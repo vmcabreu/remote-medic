@@ -1,0 +1,95 @@
+.core-icon {
+  width: 40px;
+  height: 40px;
+  display: inline-block;
+  background-color: #000;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+}
+
+.small-icon {
+  width: 20px !important;
+  height: 20px !important;
+}
+.big-icon {
+  width: 60px !important;
+  height: 60px !important;
+}
+
+.error-octogonal {
+  -webkit-mask-image: url("./../icons/error-octogonal.svg");
+  mask-image: url("./../icons/error-octogonal.svg");
+}
+
+.medication {
+  -webkit-mask-image: url("./../icons/medication.svg");
+  mask-image: url("./../icons/medication.svg");
+}
+.add {
+  -webkit-mask-image: url("./../icons/plus.svg");
+  mask-image: url("./../icons/plus.svg");
+}
+.logout {
+  -webkit-mask-image: url("./../icons/running.svg");
+  mask-image: url("./../icons/running.svg");
+}
+.user-group {
+  -webkit-mask-image: url("./../icons/users.svg");
+  mask-image: url("./../icons/users.svg");
+}
+.dashboard-monitor {
+  -webkit-mask-image: url("./../icons/dashboard-monitor.svg");
+  mask-image: url("./../icons/dashboard-monitor.svg");
+}
+.circle-user {
+  -webkit-mask-image: url("./../icons/circle-user.svg");
+  mask-image: url("./../icons/circle-user.svg");
+}
+.pills {
+  -webkit-mask-image: url("./../icons/capsules.svg");
+  mask-image: url("./../icons/capsules.svg");
+}
+.stethoscope {
+  -webkit-mask-image: url("./../icons/stethoscope.svg");
+  mask-image: url("./../icons/stethoscope.svg");
+}
+.square-phone {
+  -webkit-mask-image: url("./../icons/square-phone.svg");
+  mask-image: url("./../icons/square-phone.svg");
+}
+.calendar-clock {
+  -webkit-mask-image: url("./../icons/calendar-clock.svg");
+  mask-image: url("./../icons/calendar-clock.svg");
+}
+.user-avatar {
+  -webkit-mask-image: url("./../icons/user.svg");
+  mask-image: url("./../icons/user.svg");
+}
+.triangle-warning {
+  -webkit-mask-image: url("./../icons/triangle-warning.svg");
+  mask-image: url("./../icons/triangle-warning.svg");
+}
+.disable-round {
+  -webkit-mask-image: url("./../icons/ban.svg");
+  mask-image: url("./../icons/ban.svg");
+}
+.check-circle {
+  -webkit-mask-image: url("./../icons/check-circle.svg");
+  mask-image: url("./../icons/check-circle.svg");
+}
+.cross-circle {
+  -webkit-mask-image: url("./../icons/cross-circle.svg");
+  mask-image: url("./../icons/cross-circle.svg");
+}
+.file-edit {
+  -webkit-mask-image: url("./../icons/file-edit.svg");
+  mask-image: url("./../icons/file-edit.svg");
+}
+.delete {
+  -webkit-mask-image: url("./../icons/trash.svg");
+  mask-image: url("./../icons/trash.svg");
+}

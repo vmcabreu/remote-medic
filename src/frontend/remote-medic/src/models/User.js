@@ -12,7 +12,6 @@ export class User {
     this.updated_at = data.updated_at || "";
   }
 
-  // Método para validar los datos del paciente
   validate() {
     const errors = [];
 
@@ -33,7 +32,6 @@ export class User {
     };
   }
 
-  // Validaciones auxiliares
   isValidEmail(email) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -41,7 +39,6 @@ export class User {
 
 
 
-  // Convertir a objeto plano para enviar al backend
   toJSON() {
     return {
       id: this.id,
@@ -57,7 +54,6 @@ export class User {
     };
   }
 
-  // Método para enviar solo los campos necesarios para crear
   toCreatePayload() {
     const payload = {
       username: this.username,
@@ -68,7 +64,7 @@ export class User {
       is_admin: this.is_admin,
     };
 
-    // Solo agregar campos opcionales si tienen valor
+
     if (this.username) payload.username = this.username;
     if (this.email) payload.email = this.email;
     if (this.first_name) payload.first_name = this.first_name;
@@ -79,7 +75,6 @@ export class User {
     return payload;
   }
 
-  // Método para actualizar desde respuesta del backend
   updateFromResponse(data) {
     this.id = data.id;
     this.name = data.name;
@@ -94,17 +89,14 @@ export class User {
     if (data.assigned_users) this.assigned_users = data.assigned_users;
   }
 
-  // Método estático para crear desde respuesta del backend
   static fromBackend(data) {
     return new User(data);
   }
 
-  // Método para clonar el paciente
   clone() {
     return new User(this.toJSON());
   }
 
-  // Método para formatear fecha de creación
   getFormattedCreatedDate() {
     if (!this.created_at) return "N/A";
     return new Date(this.created_at).toLocaleDateString("es-ES", {
@@ -114,7 +106,6 @@ export class User {
     });
   }
 
-  // Método para obtener iniciales del nombre
   getInitials() {
     return this.name
       .split(" ")
