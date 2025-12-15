@@ -1,7 +1,7 @@
 ---
 # 🏥 Sistema de Monitorización de Pacientes y Cuidadores
 
-Este proyecto es una aplicación web diseñada para ayudar en el **seguimiento de pacientes o familiares enfermos**, permitiendo registrar información médica clave como medicamentos, dolencias e instrucciones de cuidado personalizado.
+Este proyecto es una aplicación web diseñada para ayudar en el **seguimiento de pacientes**, permitiendo registrar información médica clave como medicamentos, dolencias e instrucciones de cuidado personalizado.
 
 ## 🧱 Tecnologías utilizadas
 
@@ -15,10 +15,10 @@ Este proyecto es una aplicación web diseñada para ayudar en el **seguimiento d
 ## 🚀 Funcionalidades principales
 
 - 📋 Registro y gestión de pacientes
-- 💊 Asignación de medicamentos con dosis y horarios
+- 💊 Asignación de medicamentos con dosis y horarios y admistración de medicamentos
 - 🤒 Registro de dolencias y condiciones médicas
 - 📘 Instrucciones personalizadas de cuidado
-- 🔐 Sistema básico de autenticación para cuidadores o familiares con JWT
+- 🔐 Sistema básico de autenticación para cuidadores con JWT
 
 
 ---
@@ -89,12 +89,11 @@ Esto iniciará los servicios de frontend (Vue), backend (Flask) y la base de dat
 FLASK_ENV=development
 DATABASE_URL=postgresql://usuario:contraseña@localhost/paciente_monitor
 SECRET_KEY=supersecreto
-```
-
-### frontend/.env
-
-```env
-VITE_API_BASE_URL=http://localhost:5000/api
+JWT_SECRET_KEY=secretojwt
+JWT_ACCESS_TOKEN_EXPIRES_MINUTES=30
+JWT_REFRESH_TOKEN_EXPIRES_DAYS=7
+FLASK_ENV=development
+FLASK_DEBUG=True
 ```
 
 ---
@@ -104,6 +103,7 @@ VITE_API_BASE_URL=http://localhost:5000/api
 - Panel de notificaciones y alertas de medicación
 - Calendario de seguimiento
 - Versión móvil optimizada
+- Uso de familiares
 
 ---
 
